@@ -14,6 +14,6 @@ def audio_clip(data_dir, N, low, high, duration, output_dir):
             os.makedirs(p)
         y, _ = librosa.load(speakers[i], sr=SAMPLING_RATE)
         for j in range(N):
-            k = int(np.random.randint(low, high, size=1))
+            k = int(np.random.randint(low,  min(high, (len(y) - duration*SAMPLING_RATE) / SAMPLING_RATE), size=1))
             librosa.output.write_wav(os.path.join(p, str(j)) + ".wav", 
               y[k*SAMPLING_RATE : (k+duration)*SAMPLING_RATE], SAMPLING_RATE)

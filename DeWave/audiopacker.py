@@ -68,7 +68,7 @@ class PackData(object):
         for i in self.speaker_file_match:
             j = self.speaker_file_match[i]
 
-            print("Match:\t%d/%d" % (self.match_counter, len(self.speaker_file_match)))
+            print("Match:\t%d/%d = %d" % (self.match_counter, len(self.speaker_file_match), self.match_counter / len(self.speaker_file_match)))
             self.match_counter += 1
 
             speech_1, _ = librosa.core.load(i, sr=SAMPLING_RATE)

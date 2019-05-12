@@ -12,6 +12,7 @@ def audio_clip(data_dir, N, low, high, duration, output_dir):
 
     print("Speaker count: %s" % len(speakers_dirs))
     for i in range(len(speakers_dirs)):
+        print("Clipping from speaker %d: %s" % i, len(speakers_dirs))
         speaker_dir = speakers_dirs[i]
         audio_files = glob.glob(os.path.join(speaker_dir, "**/*.sph"), recursive=True)
         audio_files.extend(glob.glob(os.path.join(speaker_dir, "**/*.wav"), recursive=True))

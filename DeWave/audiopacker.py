@@ -51,6 +51,8 @@ class PackData(object):
         self.samples = []
         ## the begining index of a batch
         self.ind = 0
+
+        self.match_counter = 0
         # generate match dict
         for i in range(self.n_speaker):
             for j in self.speaker_file[i]:
@@ -65,6 +67,10 @@ class PackData(object):
         # for each file pair, generate their mixture and reference samples
         for i in self.speaker_file_match:
             j = self.speaker_file_match[i]
+
+            print("Match:\t%d/%d" % (match_counter, len(self.speaker_file_match)))
+            match_counter += 1
+
             speech_1, _ = librosa.core.load(i, sr=SAMPLING_RATE)
             # amp factor between -3 dB - 3 dB
             fac = np.random.rand(1)[0] * 6 - 3

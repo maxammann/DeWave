@@ -4,6 +4,7 @@ import os
 import numpy as np
 from .constant import *
 import argparse
+import math
 
 def audio_clip(data_dir, N, low, high, duration, output_dir):
     speakers_dirs = [os.path.join(data_dir, i) for i in os.listdir(data_dir)\
@@ -23,6 +24,6 @@ def audio_clip(data_dir, N, low, high, duration, output_dir):
         for audio_file in audio_files:
             y, _ = librosa.load(audio_file, sr=SAMPLING_RATE)
             for j in range(N):
-                k = int(np.random.randint(low,  min(high, (len(y) - duration*SAMPLING_RATE) / SAMPLING_RATE), size=1))
+                k = int(np.random.uniform(low,  min(high, (len(y) - duration*SAMPLING_RATE) / SAMPLING_RATE), size=1))
                 librosa.output.write_wav(os.path.join(p, str(j)) + ".wav", 
-                y[k*SAMPLING_RATE : (k+duration)*SAMPLING_RATE], SAMPLING_RATE)
+                y[k*SAMPLING_RATE : math.floor((k+duration)*SAMPLING_RATE)], SAMPLING_RATE)

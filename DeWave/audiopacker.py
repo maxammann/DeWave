@@ -68,8 +68,8 @@ class PackData(object):
         for i in self.speaker_file_match:
             j = self.speaker_file_match[i]
 
-            print("Match:\t%d/%d" % (match_counter, len(self.speaker_file_match)))
-            match_counter += 1
+            print("Match:\t%d/%d" % (self.match_counter, len(self.speaker_file_match)))
+            self.match_counter += 1
 
             speech_1, _ = librosa.core.load(i, sr=SAMPLING_RATE)
             # amp factor between -3 dB - 3 dB

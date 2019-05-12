@@ -6,9 +6,9 @@ from .constant import *
 import argparse
 
 def audio_clip(data_dir, N, low, high, duration, output_dir):
-    speakers = glob.glob(os.path.join(data_dir, "**/*.sph", recursive=True))
-    speakers.extend(glob.glob(os.path.join(data_dir, "**/*.wav", recursive=True)))
-    speakers.extend(glob.glob(os.path.join(data_dir, "**/*.m4a", recursive=True)))
+    speakers = glob.glob(os.path.join(data_dir, "**/*.sph"), recursive=True)
+    speakers.extend(glob.glob(os.path.join(data_dir, "**/*.wav"), recursive=True))
+    speakers.extend(glob.glob(os.path.join(data_dir, "**/*.m4a"), recursive=True))
     for i in range(len(speakers)):
         p = os.path.join(output_dir, str(i))
         if not os.path.exists(p):

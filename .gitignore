@@ -5,3 +5,5 @@
 models/
 
 *.pyc
+
+venv/

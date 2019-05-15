@@ -19,11 +19,11 @@ class Model(object):
         # biases and weights for the last layer
         self.weights = {
             'out': tf.Variable(
-                tf.random_normal([2 * n_hidden, EMBBEDDING_D * NEFF]))
+                tf.random_normal([2 * n_hidden, EMBBEDDING_D * NEFF], mean=0.0, stddev=1.0))
         }
         self.biases = {
             'out': tf.Variable(
-                tf.random_normal([EMBBEDDING_D * NEFF]))
+                tf.random_normal([EMBBEDDING_D * NEFF], mean=0.0, stddev=1.0))
         }
 
     def inference(self, x):

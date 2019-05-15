@@ -1,3 +1,7 @@
 *.wav
 *.sph
 *-sshfs
+
+models/
+
+*.pyc

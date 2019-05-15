@@ -27,6 +27,9 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
     max_steps = MAX_STEP
     batch_size = TRAIN_BATCH_SIZE
 
+    os.makedirs(model_dir)
+    os.makedirs(sum_dir)
+
     train_loss_file = os.path.join(sum_dir, "train_loss")
     val_loss_file = os.path.join(sum_dir, "val_loss")
 

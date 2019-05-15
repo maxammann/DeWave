@@ -53,10 +53,11 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
         VAD_data_reshaped = tf.reshape(VAD_data, [-1, NEFF])
         # compute the loss
         loss = BiModel.loss(embedding, Y_data_reshaped, VAD_data_reshaped)
+        train_loss_summary_op = tf.summary.scalar('train_loss', loss)
+        val_loss_summary_op = tf.summary.scalar('val_loss', loss)
         # get the train operation
         train_op = BiModel.train(loss, lr)
         saver = tf.train.Saver(tf.global_variables())
-        summary_op = tf.summary.merge_all()
         sess = tf.Session()
 
         # either train from scratch or a trained model
@@ -97,7 +98,7 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
             Y_data_np = Y_data_np.astype('int')
             # train the model
             loss_value, _, summary_str = sess.run(
-                [loss, train_op, summary_op],
+                [loss, train_op, train_loss_summary_op],
                 feed_dict={in_data: in_data_np,
                            VAD_data: VAD_data_np,
                            Y_data: Y_data_np,
@@ -149,7 +150,7 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
                          for item in data_batch])
                     Y_data_np = Y_data_np.astype('int')
                     loss_value, = sess.run(
-                        [loss],
+                        [loss, val_loss_summary_op],
                         feed_dict={in_data: in_data_np,
                                    VAD_data: VAD_data_np,
                                    Y_data: Y_data_np,
@@ -165,6 +166,3 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
 
         np.save(train_loss_file, train_loss)
         np.save(val_loss_file, val_loss)
-if __name__ == "__main__":
-    print('%s start' % datetime.now())
-    train()

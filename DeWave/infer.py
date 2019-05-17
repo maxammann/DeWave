@@ -186,9 +186,9 @@ def blind_source_separation(input_file, model_dir):
                 out1 = np.concatenate((out_stft1, con_data1))
                 out2 = np.concatenate((out_stft2, con_data2))
                 out_mix = np.concatenate((out_stft_mix, con_mix))
-                frame_out1 = np.fft.ifft(out1).astype(np.float64)
-                frame_out2 = np.fft.ifft(out2).astype(np.float64)
-                frame_mix = np.fft.ifft(out_mix).astype(np.float64)
+                frame_out1 = np.fft.ifft(out1).real.astype(np.float64)
+                frame_out2 = np.fft.ifft(out2).real.astype(np.float64)
+                frame_mix = np.fft.ifft(out_mix).real.astype(np.float64)
 
                 start = tot_ind * hop_size
                 out_audio1[start:(start + len(frame_out1))] += frame_out1 * 0.5016

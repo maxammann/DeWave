@@ -17,9 +17,9 @@ EMBBEDDING_D = 40
 GLOBAL_MEAN = 44
 GLOBAL_STD = 15.5
 # feed forward dropout prob
-P_DROPOUT_FF = 0.5
+P_DROPOUT_FF = 1
 # recurrent dropout prob
-P_DROPOUT_RC = 0.2
+P_DROPOUT_RC = 1
 N_HIDDEN = 600
 LEARNING_RATE = 1e-5
 MAX_STEP = 2000000

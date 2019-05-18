@@ -27,8 +27,8 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
     max_steps = MAX_STEP
     batch_size = TRAIN_BATCH_SIZE
 
-    os.makedirs(model_dir)
-    os.makedirs(sum_dir)
+    os.makedirs(model_dir, exist_ok=True)
+    os.makedirs(sum_dir, exist_ok=True)
 
     train_loss_file = os.path.join(sum_dir, "train_loss")
     val_loss_file = os.path.join(sum_dir, "val_loss")
@@ -152,13 +152,14 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
                          [1, FRAMES_PER_SAMPLE, NEFF, 2])
                          for item in data_batch])
                     Y_data_np = Y_data_np.astype('int')
-                    loss_value, = sess.run(
+                    loss_value, summary_str = sess.run(
                         [loss, val_loss_summary_op],
                         feed_dict={in_data: in_data_np,
                                    VAD_data: VAD_data_np,
                                    Y_data: Y_data_np,
                                    p_keep_ff: 1,
                                    p_keep_rc: 1})
+                    summary_writer.add_summary(summary_str, step)
                     loss_sum += loss_value
                 val_loss.append(loss_sum / count)
                 print ('validation loss: %.3f' % (loss_sum / count))

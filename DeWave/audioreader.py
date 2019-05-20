@@ -34,8 +34,6 @@ class AudioReader(object):
         the formats required by the model'''
         # loading and transformation
         speech_mix, _ = librosa.load(data_dir, SAMPLING_RATE)
-        # fix the issue at the begining
-        speech_mix = np.concatenate((speech_mix, speech_mix, speech_mix), axis=0)
         speech_mix_spec0 = stft(speech_mix, FRAME_SIZE)[:, :NEFF]
         speech_mix_spec = np.abs(speech_mix_spec0)
         speech_phase = speech_mix_spec0 / speech_mix_spec

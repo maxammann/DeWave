@@ -200,10 +200,10 @@ def blind_source_separation(input_file, model_dir):
 
         ## the audio has been padded 3 times in AudioReader
         ## restore the original audio
-        len1 = len(out_audio1) // 3
-        len2 = len(out_audio2) // 3
-        source1 = out_audio1[len1:2*len1]
-        source2 = out_audio2[len2:2*len2]
-        librosa.output.write_wav(input_file[0:-4]+"_source1.wav", source1, SAMPLING_RATE)
-        librosa.output.write_wav(input_file[0:-4]+"_source2.wav", source2, SAMPLING_RATE)
-        return [(source1, SAMPLING_RATE), (source2, SAMPLING_RATE)]
+        #len1 = len(out_audio1) // 3
+        #len2 = len(out_audio2) // 3
+        #source1 = out_audio1[len1:2*len1]
+        #source2 = out_audio2[len2:2*len2]
+        librosa.output.write_wav(input_file[0:-4]+"_source1.wav", out_audio1.astype(np.float32), SAMPLING_RATE)
+        librosa.output.write_wav(input_file[0:-4]+"_source2.wav", out_audio2.astype(np.float32), SAMPLING_RATE)
+        return [(out_audio1, SAMPLING_RATE), (out_audio2, SAMPLING_RATE)]

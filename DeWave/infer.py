@@ -21,11 +21,12 @@ from numpy.lib import stride_tricks
 from .audioreader import AudioReader
 from .model import Model
 from .constant import *
+import ntpath
 
 
 ## input is the file in wav form
 ## the pretrained model is stored at train/model.ckpt
-def blind_source_separation(input_file, model_dir):
+def blind_source_separation(input_file, model_dir, output_dir):
     n_hidden = N_HIDDEN
     batch_size = 1  # infer one audio
     hop_size = FRAME_SIZE // 4
@@ -204,6 +205,11 @@ def blind_source_separation(input_file, model_dir):
         #len2 = len(out_audio2) // 3
         #source1 = out_audio1[len1:2*len1]
         #source2 = out_audio2[len2:2*len2]
-        librosa.output.write_wav(input_file[0:-4]+"_source1.wav", out_audio1.astype(np.float32), SAMPLING_RATE)
-        librosa.output.write_wav(input_file[0:-4]+"_source2.wav", out_audio2.astype(np.float32), SAMPLING_RATE)
+
+        mix_dir = estimated_dir = output_dir + "/" + os.path.splitext(ntpath.basename(input_file))[0]
+        estimated_dir = mix_dir + "/estimated"
+        os.makedirs(estimated_dir, exist_ok=True)
+        librosa.output.write_wav(estimated_dir + "/source1.wav", out_audio1.astype(np.float32), SAMPLING_RATE)
+        librosa.output.write_wav(estimated_dir + "/source2.wav", out_audio2.astype(np.float32), SAMPLING_RATE)
+        librosa.output.write_wav(mix_dir + "/mix.wav", mix.astype(np.float32), SAMPLING_RATE)
         return [(out_audio1, SAMPLING_RATE), (out_audio2, SAMPLING_RATE)]

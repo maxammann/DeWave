@@ -32,7 +32,7 @@ class Model(object):
         state_concate = x
 
         for i in range(N_LAYERS):
-            with tf.variable_scope('BLSTM1') as scope:
+            with tf.variable_scope('BLSTM' + i) as scope:
                 lstm_fw_cell = tf.contrib.rnn.LayerNormBasicLSTMCell(
                     self.n_hidden, layer_norm=False,
                     dropout_keep_prob=self.p_keep_rc)

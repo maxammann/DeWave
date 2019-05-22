@@ -28,87 +28,31 @@ class Model(object):
 
     def inference(self, x):
         '''The structure of the network'''
-        # four layer of LSTM cell blocks
-        with tf.variable_scope('BLSTM1') as scope:
-            lstm_fw_cell = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_fw_cell = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_fw_cell, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            lstm_bw_cell = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_bw_cell = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_bw_cell, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            outputs, _ = tf.nn.bidirectional_dynamic_rnn(
-                lstm_fw_cell, lstm_bw_cell, x,
-                sequence_length=[FRAMES_PER_SAMPLE] * self.batch_size,
-                dtype=tf.float32)
-            state_concate = tf.concat(outputs, 2)
-        with tf.variable_scope('BLSTM2') as scope:
-            # lstm_fw_cell2 = tf.nn.rnn_cell.LSTMCell(
-            #     self.n_hidden)
-            # lstm_bw_cell2 = tf.nn.rnn_cell.LSTMCell(
-            #     self.n_hidden)
-            lstm_fw_cell2 = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_fw_cell2 = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_fw_cell2, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            lstm_bw_cell2 = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_bw_cell2 = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_bw_cell2, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            outputs2, _ = tf.nn.bidirectional_dynamic_rnn(
-                lstm_fw_cell2, lstm_bw_cell2, state_concate,
-                sequence_length=[FRAMES_PER_SAMPLE] * self.batch_size,
-                dtype=tf.float32)
-            state_concate2 = tf.concat(outputs2, 2)
+        
+        state_concate = x
 
-        with tf.variable_scope('BLSTM3') as scope:
-            lstm_fw_cell3 = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_fw_cell3 = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_fw_cell3, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            lstm_bw_cell3 = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_bw_cell3 = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_bw_cell3, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            outputs3, _ = tf.nn.bidirectional_dynamic_rnn(
-                lstm_fw_cell3, lstm_bw_cell3, state_concate2,
-                sequence_length=[FRAMES_PER_SAMPLE] * self.batch_size,
-                dtype=tf.float32)
-            state_concate3 = tf.concat(outputs3, 2)
-        with tf.variable_scope('BLSTM4') as scope:
-            lstm_fw_cell4 = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_fw_cell4 = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_fw_cell4, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            lstm_bw_cell4 = tf.contrib.rnn.LayerNormBasicLSTMCell(
-                self.n_hidden, layer_norm=False,
-                dropout_keep_prob=self.p_keep_rc)
-            lstm_bw_cell4 = tf.nn.rnn_cell.DropoutWrapper(
-                lstm_bw_cell4, input_keep_prob=1,
-                output_keep_prob=self.p_keep_ff)
-            outputs4, _ = tf.nn.bidirectional_dynamic_rnn(
-                lstm_fw_cell4, lstm_bw_cell4, state_concate3,
-                sequence_length=[FRAMES_PER_SAMPLE] * self.batch_size,
-                dtype=tf.float32)
-            state_concate4 = tf.concat(outputs4, 2)
+        for i in range(N_LAYERS):
+            with tf.variable_scope('BLSTM1') as scope:
+                lstm_fw_cell = tf.contrib.rnn.LayerNormBasicLSTMCell(
+                    self.n_hidden, layer_norm=False,
+                    dropout_keep_prob=self.p_keep_rc)
+                lstm_fw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                    lstm_fw_cell, input_keep_prob=1,
+                    output_keep_prob=self.p_keep_ff)
+                lstm_bw_cell = tf.contrib.rnn.LayerNormBasicLSTMCell(
+                    self.n_hidden, layer_norm=False,
+                    dropout_keep_prob=self.p_keep_rc)
+                lstm_bw_cell = tf.nn.rnn_cell.DropoutWrapper(
+                    lstm_bw_cell, input_keep_prob=1,
+                    output_keep_prob=self.p_keep_ff)
+                outputs, _ = tf.nn.bidirectional_dynamic_rnn(
+                    lstm_fw_cell, lstm_bw_cell, state_concate,
+                    sequence_length=[FRAMES_PER_SAMPLE] * self.batch_size,
+                    dtype=tf.float32)
+                state_concate = tf.concat(outputs, 2)
 
         # one layer of embedding output with tanh activation function
-        out_concate = tf.reshape(state_concate2, [-1, self.n_hidden * 2])
+        out_concate = tf.reshape(state_concate, [-1, self.n_hidden * 2])
         emb_out = tf.matmul(out_concate,
                             self.weights['out']) + self.biases['out']
         emb_out = tf.nn.tanh(emb_out)

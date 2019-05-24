@@ -30,8 +30,8 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
     os.makedirs(model_dir, exist_ok=True)
     os.makedirs(sum_dir, exist_ok=True)
 
-    train_loss_file = os.path.join(sum_dir, "train_loss")
-    val_loss_file = os.path.join(sum_dir, "val_loss")
+    train_loss_file = os.path.join(sum_dir, "train_loss.npy")
+    val_loss_file = os.path.join(sum_dir, "val_loss.npy")
 
     with tf.Graph().as_default():
         # dropout keep probability

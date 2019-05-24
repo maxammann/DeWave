@@ -113,7 +113,7 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
                 # import ipdb; ipdb.set_trace()
             assert not np.isnan(loss_value)
             if step % 10 == 0: 
-                np.append(train_loss, loss_value.copy())
+                train_loss = np.append(train_loss, loss_value.copy())
                 # show training progress every 100 steps
                 num_examples_per_step = batch_size
                 examples_per_sec = num_examples_per_step / duration
@@ -161,7 +161,7 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
                                    p_keep_rc: 1})
                     summary_writer.add_summary(summary_str, step)
                     loss_sum += loss_value
-                np.append(val_loss, loss_sum / count)
+                val_loss = np.append(val_loss, loss_sum / count)
                 print ('validation loss: %.3f' % (loss_sum / count))
                 np.save(train_loss_file, train_loss)
                 np.save(val_loss_file, val_loss)

@@ -75,11 +75,11 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
         if os.path.isfile(train_loss_file):
           train_loss = np.load(train_loss_file)
         else:
-          train_loss = np.array()
+          train_loss = np.array([])
         if os.path.isfile(val_loss_file):
           val_loss = np.load(val_loss_file)
         else:
-          val_loss = np.array()
+          val_loss = np.array([])
 
         summary_writer = tf.summary.FileWriter(sum_dir, sess.graph)
         last_epoch = data_generator.epoch

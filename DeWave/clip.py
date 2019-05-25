@@ -11,9 +11,9 @@ def audio_clip(data_dir, N, low, high, duration, output_dir):
                         if os.path.isdir(os.path.join(data_dir, i))]
 
     print("Speaker count: %s" % len(speakers_dirs))
-    for i in range(len(speakers_dirs)):
-        speaker_dir = speakers_dirs[i]
-        print("Speaker:\t%d" % i)
+    for speaker_dir in speakers_dirs:
+        speaker = os.path.basename(speaker_dir)
+        print("Speaker:\t%s" % speaker)
         print("Source:\t%s" % speaker_dir)
         
         audio_files = glob.glob(os.path.join(speaker_dir, "**/*.sph"), recursive=True)
@@ -22,14 +22,21 @@ def audio_clip(data_dir, N, low, high, duration, output_dir):
 
         print("Source files:\t%d" % len(audio_files))
 
-        p = os.path.join(output_dir, str(i))
+        p = os.path.join(output_dir, speaker)
         if not os.path.exists(p):
             os.makedirs(p)
         
-        for audio_file in audio_files:
+        for j in range(N):
+            audio_file = np.random.choice(audio_files)
             print("\t%s" % audio_file)
             y, _ = librosa.load(audio_file, sr=SAMPLING_RATE)
-            for j in range(N):
+
+            if len(y) > duration * SAMPLING_RATE:
+                # Select randomly
                 k = int(np.random.uniform(low,  min(high, (len(y) - duration*SAMPLING_RATE) / SAMPLING_RATE), size=1))
-                librosa.output.write_wav(os.path.join(p, str(j)) + ".wav", 
-                y[k*SAMPLING_RATE : math.floor((k+duration)*SAMPLING_RATE)], SAMPLING_RATE)
+                utterance = y[k*SAMPLING_RATE : math.floor((k+duration)*SAMPLING_RATE)]
+            else:
+                # Use whole
+                utterance = y
+            
+            librosa.output.write_wav(os.path.join(p, str(j)) + ".wav", utterance, SAMPLING_RATE)

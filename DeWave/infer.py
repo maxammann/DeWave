@@ -205,15 +205,15 @@ def blind_source_separation(input_files, model_dir, output_dir):
 
             ## the audio has been padded 3 times in AudioReader
             ## restore the original audio
-            #len1 = len(out_audio1) // 3
-            #len2 = len(out_audio2) // 3
-            #source1 = out_audio1[len1:2*len1]
-            #source2 = out_audio2[len2:2*len2]
+            len1 = len(out_audio1) // 3
+            len2 = len(out_audio2) // 3
+            source1 = out_audio1[len1:2*len1]
+            source2 = out_audio2[len2:2*len2]
 
             mix_dir = estimated_dir = output_dir + "/" + os.path.splitext(ntpath.basename(input_file))[0]
             print("Writing to %s" % mix_dir)
             estimated_dir = mix_dir + "/estimated"
             os.makedirs(estimated_dir, exist_ok=True)
-            librosa.output.write_wav(estimated_dir + "/source1.wav", out_audio1.astype(np.float32), SAMPLING_RATE)
-            librosa.output.write_wav(estimated_dir + "/source2.wav", out_audio2.astype(np.float32), SAMPLING_RATE)
+            librosa.output.write_wav(estimated_dir + "/source1.wav", source1.astype(np.float32), SAMPLING_RATE)
+            librosa.output.write_wav(estimated_dir + "/source2.wav", source2.astype(np.float32), SAMPLING_RATE)
             librosa.output.write_wav(mix_dir + "/mix.wav", mix.astype(np.float32), SAMPLING_RATE)

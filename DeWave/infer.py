@@ -54,7 +54,8 @@ def blind_source_separation(input_files, model_dir, output_dir):
 
         for input_file in input_files:
             # audio sample generator
-            data_generator = AudioReader(input_file)
+            speech_mix, _ = librosa.load(input_file, SAMPLING_RATE)
+            data_generator = AudioReader(speech_mix)
 
             # arrays to store output waveform
             N_frames = data_generator.tot_samp

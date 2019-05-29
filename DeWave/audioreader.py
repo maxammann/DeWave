@@ -29,11 +29,9 @@ class AudioReader(object):
     '''
         read in a single audio sample
     '''
-    def __init__(self, data_dir):
+    def __init__(self, speech_mix):
         '''Load in the audio file and transform the signal into
         the formats required by the model'''
-        # loading and transformation
-        speech_mix, _ = librosa.load(data_dir, SAMPLING_RATE)
         # fix the issue at the begining
         speech_mix = np.concatenate((speech_mix, speech_mix, speech_mix), axis=0)
         speech_mix_spec0 = stft(speech_mix, FRAME_SIZE)[:, :NEFF]

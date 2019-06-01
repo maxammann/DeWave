@@ -10,7 +10,7 @@ AMP_FAC = 10000
 MIN_AMP = 10000
 # TF bins smaller than THRESHOLD will be
 # considered inactive
-THRESHOLD = 40
+THRESHOLD = None
 # embedding dimention
 EMBBEDDING_D = 40
 # prams for pre-whitening
@@ -21,7 +21,7 @@ P_DROPOUT_FF = 0.5
 # recurrent dropout prob
 P_DROPOUT_RC = 0.2
 N_HIDDEN = 600
-N_LAYERS = 6
+N_LAYERS = 4
 LAYER_NAME_OFFSET = 1
 LEARNING_RATE = 1e-5
 MAX_STEP = 2000000

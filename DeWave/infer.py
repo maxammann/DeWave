@@ -86,18 +86,22 @@ def blind_source_separation(input_files, model_dir, output_dir):
                     feed_dict={in_data: in_data_np,
                             p_keep_ff: 1,
                             p_keep_rc: 1})
+
+                embedding_ac = [embedding_np[i, j, :]
+                                for i, j in itertools.product(
+                                    range(FRAMES_PER_SAMPLE), range(NEFF))]
                 # ipdb.set_trace()
                 if(sep_flag[step] == 1):
                     # if the frame need to be seperated
                     # cluster the embeddings
                     # import ipdb; ipdb.set_trace()
-                    if embedding_np == []:
+                    if embedding_ac == []:
                         break
-                    kmean = KMeans(n_clusters=2, random_state=0).fit(embedding_np)
+                    kmean = KMeans(n_clusters=2, random_state=0).fit(embedding_ac)
                 else:
                     # if the frame don't need to be seperated
                     # don't split the embeddings
-                    kmean = KMeans(n_clusters=1, random_state=0).fit(embedding_np)
+                    kmean = KMeans(n_clusters=1, random_state=0).fit(embedding_ac)
                 mask = np.zeros([FRAMES_PER_SAMPLE, NEFF, 2])
                 ind = 0
                 if N_assign == 0:

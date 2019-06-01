@@ -41,7 +41,6 @@ class AudioReader(object):
             speech_mix_spec, np.max(speech_mix_spec) / MIN_AMP)
         speech_mix_spec = 20. * np.log10(speech_mix_spec * AMP_FAC)
         max_mag = np.max(speech_mix_spec)
-        speech_VAD = (speech_mix_spec > (max_mag - THRESHOLD)).astype(int)
         speech_mix_spec = (speech_mix_spec - GLOBAL_MEAN) / GLOBAL_STD
         len_spec = speech_mix_spec.shape[0]
         k = 0
@@ -51,9 +50,7 @@ class AudioReader(object):
         while(k + FRAMES_PER_SAMPLE < len_spec):
             phase = speech_phase[k: k + FRAMES_PER_SAMPLE, :]
             sample_mix = speech_mix_spec[k:k + FRAMES_PER_SAMPLE, :]
-            VAD = speech_VAD[k:k + FRAMES_PER_SAMPLE, :]
             sample_dict = {'Sample': sample_mix,
-                           'VAD': VAD,
                            'Phase': phase}
             self.samples.append(sample_dict)
             k = k + FRAMES_PER_SAMPLE
@@ -63,9 +60,7 @@ class AudioReader(object):
         phase = np.concatenate((speech_phase[k:, :], np.zeros([n_left, NEFF])))
         sample_mix = np.concatenate(
             (speech_mix_spec[k:, :], np.zeros([n_left, NEFF])))
-        VAD = np.concatenate((speech_VAD[k:, :], np.zeros([n_left, NEFF])))
         sample_dict = {'Sample': sample_mix,
-                       'VAD': VAD,
                        'Phase': phase}
         self.samples.append(sample_dict)
         self.tot_samp = len(self.samples)

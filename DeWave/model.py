@@ -61,20 +61,14 @@ class Model(object):
         normalized_emb = tf.nn.l2_normalize(reshaped_emb, 2)
         return normalized_emb
 
-    def loss(self, embeddings, Y, VAD):
+    def loss(self, embeddings, Y):
         '''Defining the loss function'''
         embeddings_rs = tf.reshape(embeddings, shape=[-1, EMBBEDDING_D])
-        VAD_rs = tf.reshape(VAD, shape=[-1])
-        # get the embeddings with active VAD
-        embeddings_rsv = tf.transpose(
-            tf.multiply(tf.transpose(embeddings_rs), VAD_rs))
         embeddings_v = tf.reshape(
-            embeddings_rsv, [-1, FRAMES_PER_SAMPLE * NEFF, EMBBEDDING_D])
-        # get the Y(speaker indicator function) with active VAD
+            embeddings_rs, [-1, FRAMES_PER_SAMPLE * NEFF, EMBBEDDING_D])
+        # get the Y(speaker indicator function)
         Y_rs = tf.reshape(Y, shape=[-1, 2])
-        Y_rsv = tf.transpose(
-            tf.multiply(tf.transpose(Y_rs), VAD_rs))
-        Y_v = tf.reshape(Y_rsv, shape=[-1, FRAMES_PER_SAMPLE * NEFF, 2])
+        Y_v = tf.reshape(Y_rs, shape=[-1, FRAMES_PER_SAMPLE * NEFF, 2])
         # fast computation format of the embedding loss function
         loss_batch = tf.nn.l2_loss(
             tf.matmul(tf.transpose(

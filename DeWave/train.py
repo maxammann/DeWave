@@ -40,11 +40,9 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
         # generator for training set and validation set
         data_generator = DataGenerator(train_pkl, batch_size)
         val_generator = DataGenerator(val_pkl, batch_size)
-        # placeholder for input log spectrum, VAD info.,
+        # placeholder for input log spectrum
         # and speaker indicator function
         in_data = tf.placeholder(
-            tf.float32, shape=[batch_size, FRAMES_PER_SAMPLE, NEFF])
-        VAD_data = tf.placeholder(
             tf.float32, shape=[batch_size, FRAMES_PER_SAMPLE, NEFF])
         Y_data = tf.placeholder(
             tf.float32, shape=[batch_size, FRAMES_PER_SAMPLE, NEFF, 2])
@@ -53,9 +51,8 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
         # build the net structure
         embedding = BiModel.inference(in_data)
         Y_data_reshaped = tf.reshape(Y_data, [-1, NEFF, 2])
-        VAD_data_reshaped = tf.reshape(VAD_data, [-1, NEFF])
         # compute the loss
-        loss = BiModel.loss(embedding, Y_data_reshaped, VAD_data_reshaped)
+        loss = BiModel.loss(embedding, Y_data_reshaped)
         train_loss_summary_op = tf.summary.scalar('train_loss', loss)
         val_loss_summary_op = tf.summary.scalar('val_loss', loss)
         # get the train operation
@@ -91,10 +88,6 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
             in_data_np = np.concatenate(
                 [np.reshape(item['Sample'], [1, FRAMES_PER_SAMPLE, NEFF])
                  for item in data_batch])
-            VAD_data_np = np.concatenate(
-                [np.reshape(item['VAD'], [1, FRAMES_PER_SAMPLE, NEFF])
-                 for item in data_batch])
-            VAD_data_np = VAD_data_np.astype('int')
             Y_data_np = np.concatenate(
                 [np.reshape(item['Target'], [1, FRAMES_PER_SAMPLE, NEFF, 2])
                  for item in data_batch])
@@ -103,7 +96,6 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
             loss_value, _, summary_str = sess.run(
                 [loss, train_op, train_loss_summary_op],
                 feed_dict={in_data: in_data_np,
-                           VAD_data: VAD_data_np,
                            Y_data: Y_data_np,
                            p_keep_ff: 1 - P_DROPOUT_FF,
                            p_keep_rc: 1 - P_DROPOUT_RC})
@@ -143,10 +135,6 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
                         [np.reshape(item['Sample'],
                          [1, FRAMES_PER_SAMPLE, NEFF])
                          for item in data_batch])
-                    VAD_data_np = np.concatenate(
-                        [np.reshape(item['VAD'], [1, FRAMES_PER_SAMPLE, NEFF])
-                         for item in data_batch])
-                    VAD_data_np = VAD_data_np.astype('int')
                     Y_data_np = np.concatenate(
                         [np.reshape(item['Target'],
                          [1, FRAMES_PER_SAMPLE, NEFF, 2])
@@ -155,7 +143,6 @@ def train(model_dir, sum_dir, train_pkl, val_pkl):
                     loss_value, summary_str = sess.run(
                         [loss, val_loss_summary_op],
                         feed_dict={in_data: in_data_np,
-                                   VAD_data: VAD_data_np,
                                    Y_data: Y_data_np,
                                    p_keep_ff: 1,
                                    p_keep_rc: 1})

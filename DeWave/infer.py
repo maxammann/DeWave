@@ -78,11 +78,7 @@ def blind_source_separation(input_files, model_dir, output_dir):
                 in_phase_np = np.concatenate(
                     [np.reshape(item['Phase'], [1, FRAMES_PER_SAMPLE, NEFF])
                     for item in data_batch])
-                # VAD info.
-                VAD_data_np = np.concatenate(
-                    [np.reshape(item['VAD'], [1, FRAMES_PER_SAMPLE, NEFF])
-                    for item in data_batch])
-
+                    
                 # get inferred embedding using trained model
                 # with keep prob = 1
                 embedding_np, = sess.run(
@@ -91,22 +87,17 @@ def blind_source_separation(input_files, model_dir, output_dir):
                             p_keep_ff: 1,
                             p_keep_rc: 1})
                 # ipdb.set_trace()
-                # get active TF-bin embedding according to VAD
-                embedding_ac = [embedding_np[i, j, :]
-                                for i, j in itertools.product(
-                                    range(FRAMES_PER_SAMPLE), range(NEFF))
-                                if VAD_data_np[0, i, j] == 1]
                 if(sep_flag[step] == 1):
                     # if the frame need to be seperated
                     # cluster the embeddings
                     # import ipdb; ipdb.set_trace()
-                    if embedding_ac == []:
+                    if embedding_np == []:
                         break
-                    kmean = KMeans(n_clusters=2, random_state=0).fit(embedding_ac)
+                    kmean = KMeans(n_clusters=2, random_state=0).fit(embedding_np)
                 else:
                     # if the frame don't need to be seperated
                     # don't split the embeddings
-                    kmean = KMeans(n_clusters=1, random_state=0).fit(embedding_ac)
+                    kmean = KMeans(n_clusters=1, random_state=0).fit(embedding_np)
                 mask = np.zeros([FRAMES_PER_SAMPLE, NEFF, 2])
                 ind = 0
                 if N_assign == 0:
@@ -159,12 +150,11 @@ def blind_source_separation(input_files, model_dir, output_dir):
                         kmean.labels_ = (~kmean.labels_).astype('int')
                     center = center * 0.7 + 0.3 * kmean.cluster_centers_
 
-                # transform the clustering result and VAD info. into masks
+                # transform the clustering result. into masks
                 for i in range(FRAMES_PER_SAMPLE):
                     for j in range(NEFF):
-                        if VAD_data_np[0, i, j] == 1:
-                            mask[i, j, kmean.labels_[ind]] = 1
-                            ind += 1
+                        mask[i, j, kmean.labels_[ind]] = 1
+                        ind += 1
                 for i in range(FRAMES_PER_SAMPLE):
                     # apply the mask and reconstruct the waveform
                     tot_ind = step * FRAMES_PER_SAMPLE + i
@@ -172,10 +162,8 @@ def blind_source_separation(input_files, model_dir, output_dir):
                     # amp = (in_data_np[0, i, :] *
                     #        data_batch[0]['Std']) + data_batch[0]['Mean']
                     amp = in_data_np[0, i, :] * GLOBAL_STD + GLOBAL_MEAN
-                    out_data1 = (mask[i, :, 0] * amp *
-                                VAD_data_np[0, i, :])
-                    out_data2 = (mask[i, :, 1] * amp *
-                                VAD_data_np[0, i, :])
+                    out_data1 = (mask[i, :, 0] * amp)
+                    out_data2 = (mask[i, :, 1] * amp)
                     out_mix = amp
                     out_data1_l = 10 ** (out_data1 / 20) / AMP_FAC
                     out_data2_l = 10 ** (out_data2 / 20) / AMP_FAC
